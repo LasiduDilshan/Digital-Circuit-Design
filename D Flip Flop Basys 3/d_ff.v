@@ -1,14 +1,16 @@
-`timescale 1ns / 1ps
 
 module d_ff(
-    input clk,          // system clock
-    input d,            // data bit coming in
-    input en,           // enable storing of data bit
-    output reg q        // stored data bit
-    );
-    
-    always @(posedge clk) begin
-        if(en)
-            q <= d;
-    end
+	input clock,
+	input reset,
+	input data_in,
+	output reg q
+);
+
+	always @(posedge clock or negedge reset)
+		if(~reset)
+			q <= 0;
+		else
+			q <= data_in;
+
 endmodule
+
