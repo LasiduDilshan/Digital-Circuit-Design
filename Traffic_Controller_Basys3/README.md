@@ -2,6 +2,8 @@
 
 This code controls a traffic light system for a T-junction with two roads:
 
+![2](https://github.com/LasiduDilshan/Digital-Circuit-Design/assets/126545632/d3822551-6b64-4c50-a550-ca37c40fe62d)
+
 * **Main Road (Highway):** A major road with potentially higher traffic volume.
 * **Side Road (Farm Road):** A minor road with potentially lower traffic volume.
 
