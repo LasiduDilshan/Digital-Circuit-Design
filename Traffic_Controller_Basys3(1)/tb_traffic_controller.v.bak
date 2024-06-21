@@ -1,0 +1,47 @@
+`timescale 1ns / 1ps
+
+module tb_traffic_controller;
+
+  reg clk_100MHz;
+  reg reset;
+  wire [2:0] main_st;
+  wire [2:0] cross_st;
+
+  // Instantiate the traffic controller module
+  traffic_controller uut (
+    .reset(reset),
+    .clk_100MHz(clk_100MHz),
+    .main_st(main_st),
+    .cross_st(cross_st)
+  );
+
+  // Clock generation
+  initial begin
+    clk_100MHz = 0;
+    forever #5 clk_100MHz = ~clk_100MHz;  // 100 MHz clock period = 10 ns
+  end
+
+  // Simulation control
+  initial begin
+    // Initialize inputs
+    reset = 1;
+    
+    // Wait for 100 ns for global reset to finish
+    #100;
+    
+    // Release reset
+    reset = 0;
+    
+    // Run the simulation for a certain period
+    #200000000;  // Run for sufficient time to observe the light changes
+    
+    // End the simulation
+    $finish;
+  end
+
+  // Monitor signals
+  initial begin
+    $monitor("Time: %0dns, Main State: %b, Cross State: %b", $time, main_st, cross_st);
+  end
+
+endmodule

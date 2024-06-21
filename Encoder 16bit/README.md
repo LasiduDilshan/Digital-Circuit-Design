@@ -1,0 +1,1 @@
+This code takes 16 switches (on/off) and lights up one of 4 LEDs (0-3) based on which switch is turned on. Each switch position corresponds to a specific LED. 

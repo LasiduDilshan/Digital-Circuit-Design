@@ -2,7 +2,6 @@
 
 // Having fun with BASYS 3 FPGA board
 // Encoding 16 switches into 4 LEDs
-// Authored by David J Marion
 
 module encoder16(
     input [15:0] sw,

@@ -1,0 +1,57 @@
+|top
+clk_100MHz => clk_100MHz.IN1
+reset => reset.IN1
+o_bin[0] <= gray_counter:gcntr.o_bin
+o_bin[1] <= gray_counter:gcntr.o_bin
+o_bin[2] <= gray_counter:gcntr.o_bin
+o_gray_code[0] <= gray_counter:gcntr.o_gray_code
+o_gray_code[1] <= gray_counter:gcntr.o_gray_code
+o_gray_code[2] <= gray_counter:gcntr.o_gray_code
+
+
+|top|gray_counter:gcntr
+clk => bin_counter[0].CLK
+clk => bin_counter[1].CLK
+clk => bin_counter[2].CLK
+reset => bin_counter[0].ACLR
+reset => bin_counter[1].ACLR
+reset => bin_counter[2].ACLR
+o_bin[0] <= bin_counter[0].DB_MAX_OUTPUT_PORT_TYPE
+o_bin[1] <= bin_counter[1].DB_MAX_OUTPUT_PORT_TYPE
+o_bin[2] <= bin_counter[2].DB_MAX_OUTPUT_PORT_TYPE
+o_gray_code[0] <= o_gray_code.DB_MAX_OUTPUT_PORT_TYPE
+o_gray_code[1] <= o_gray_code.DB_MAX_OUTPUT_PORT_TYPE
+o_gray_code[2] <= bin_counter[2].DB_MAX_OUTPUT_PORT_TYPE
+
+
+|top|oneHz_gen:uno
+clk_100MHz => r_1Hz.CLK
+clk_100MHz => r_counter[0].CLK
+clk_100MHz => r_counter[1].CLK
+clk_100MHz => r_counter[2].CLK
+clk_100MHz => r_counter[3].CLK
+clk_100MHz => r_counter[4].CLK
+clk_100MHz => r_counter[5].CLK
+clk_100MHz => r_counter[6].CLK
+clk_100MHz => r_counter[7].CLK
+clk_100MHz => r_counter[8].CLK
+clk_100MHz => r_counter[9].CLK
+clk_100MHz => r_counter[10].CLK
+clk_100MHz => r_counter[11].CLK
+clk_100MHz => r_counter[12].CLK
+clk_100MHz => r_counter[13].CLK
+clk_100MHz => r_counter[14].CLK
+clk_100MHz => r_counter[15].CLK
+clk_100MHz => r_counter[16].CLK
+clk_100MHz => r_counter[17].CLK
+clk_100MHz => r_counter[18].CLK
+clk_100MHz => r_counter[19].CLK
+clk_100MHz => r_counter[20].CLK
+clk_100MHz => r_counter[21].CLK
+clk_100MHz => r_counter[22].CLK
+clk_100MHz => r_counter[23].CLK
+clk_100MHz => r_counter[24].CLK
+clk_100MHz => r_counter[25].CLK
+clk_1Hz <= r_1Hz.DB_MAX_OUTPUT_PORT_TYPE
+
+

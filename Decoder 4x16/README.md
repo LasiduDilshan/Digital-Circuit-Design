@@ -1,0 +1,1 @@
+This code translates a 4-switch input (0-15) into lighting up a single LED (0-15) on a board. Each switch position turns on a different LED. 

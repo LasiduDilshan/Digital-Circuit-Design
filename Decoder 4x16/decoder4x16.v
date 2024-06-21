@@ -2,7 +2,6 @@
 
 // Having fun with BASYS 3 FPGA board
 // Decode 4 switches to 16 LEDs
-// Authored by David J Marion
 
 module decoder4x16(
     input [3:0] sw,

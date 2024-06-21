@@ -1,0 +1,104 @@
+|traffic_controller
+reset => reset.IN1
+clk_100MHz => clk_100MHz.IN2
+main_st[0] << state_machine:sm.main_st
+main_st[1] << state_machine:sm.main_st
+main_st[2] << state_machine:sm.main_st
+cross_st[0] << state_machine:sm.cross_st
+cross_st[1] << state_machine:sm.cross_st
+cross_st[2] << state_machine:sm.cross_st
+
+
+|traffic_controller|state_machine:sm
+reset => light_counter[0].ACLR
+reset => light_counter[1].ACLR
+reset => light_counter[2].ACLR
+reset => light_counter[3].ACLR
+reset => light_counter[4].ACLR
+reset => state_reg~7.DATAIN
+clk_1Hz => cross_st[0]~reg0.CLK
+clk_1Hz => cross_st[1]~reg0.CLK
+clk_1Hz => cross_st[2]~reg0.CLK
+clk_1Hz => main_st[0]~reg0.CLK
+clk_1Hz => main_st[1]~reg0.CLK
+clk_1Hz => main_st[2]~reg0.CLK
+clk_1Hz => light_counter[0].CLK
+clk_1Hz => light_counter[1].CLK
+clk_1Hz => light_counter[2].CLK
+clk_1Hz => light_counter[3].CLK
+clk_1Hz => light_counter[4].CLK
+clk_1Hz => state_reg~5.DATAIN
+main_st[0] <= main_st[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+main_st[1] <= main_st[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+main_st[2] <= main_st[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cross_st[0] <= cross_st[0]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cross_st[1] <= cross_st[1]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+cross_st[2] <= cross_st[2]~reg0.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|traffic_controller|oneHz_gen:uno
+clk_100MHz => clk_1Hz_reg.CLK
+clk_100MHz => counter_reg[0].CLK
+clk_100MHz => counter_reg[1].CLK
+clk_100MHz => counter_reg[2].CLK
+clk_100MHz => counter_reg[3].CLK
+clk_100MHz => counter_reg[4].CLK
+clk_100MHz => counter_reg[5].CLK
+clk_100MHz => counter_reg[6].CLK
+clk_100MHz => counter_reg[7].CLK
+clk_100MHz => counter_reg[8].CLK
+clk_100MHz => counter_reg[9].CLK
+clk_100MHz => counter_reg[10].CLK
+clk_100MHz => counter_reg[11].CLK
+clk_100MHz => counter_reg[12].CLK
+clk_100MHz => counter_reg[13].CLK
+clk_100MHz => counter_reg[14].CLK
+clk_100MHz => counter_reg[15].CLK
+clk_100MHz => counter_reg[16].CLK
+clk_100MHz => counter_reg[17].CLK
+clk_100MHz => counter_reg[18].CLK
+clk_100MHz => counter_reg[19].CLK
+clk_100MHz => counter_reg[20].CLK
+clk_100MHz => counter_reg[21].CLK
+clk_100MHz => counter_reg[22].CLK
+clk_100MHz => counter_reg[23].CLK
+clk_100MHz => counter_reg[24].CLK
+clk_100MHz => counter_reg[25].CLK
+reset => counter_reg[0].ACLR
+reset => counter_reg[1].ACLR
+reset => counter_reg[2].ACLR
+reset => counter_reg[3].ACLR
+reset => counter_reg[4].ACLR
+reset => counter_reg[5].ACLR
+reset => counter_reg[6].ACLR
+reset => counter_reg[7].ACLR
+reset => counter_reg[8].ACLR
+reset => counter_reg[9].ACLR
+reset => counter_reg[10].ACLR
+reset => counter_reg[11].ACLR
+reset => counter_reg[12].ACLR
+reset => counter_reg[13].ACLR
+reset => counter_reg[14].ACLR
+reset => counter_reg[15].ACLR
+reset => counter_reg[16].ACLR
+reset => counter_reg[17].ACLR
+reset => counter_reg[18].ACLR
+reset => counter_reg[19].ACLR
+reset => counter_reg[20].ACLR
+reset => counter_reg[21].ACLR
+reset => counter_reg[22].ACLR
+reset => counter_reg[23].ACLR
+reset => counter_reg[24].ACLR
+reset => counter_reg[25].ACLR
+reset => clk_1Hz_reg.ENA
+clk_1Hz <= clk_1Hz_reg.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|traffic_controller|sw_debounce:db
+clk => t2.CLK
+clk => t1.CLK
+clk => t0.CLK
+btn_in => t0.DATAIN
+btn_out <= t2.DB_MAX_OUTPUT_PORT_TYPE
+
+

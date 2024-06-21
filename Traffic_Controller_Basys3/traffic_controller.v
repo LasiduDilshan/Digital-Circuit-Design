@@ -1,88 +1,116 @@
-
-module traffic_controller(
-	input clock,
-	input reset,
-	input sensor,
-	output reg [2:0] major,
-	output reg [2:0] minor
-);
-
-	parameter S0 = 2'b00;
-	parameter S1 = 2'b01;
-	parameter S2 = 2'b10;
-	parameter S3 = 2'b11;
-	
-	reg [1:0] current_state, next_state;
-	reg [3:0] light_timer;
-	reg sensor_reg;
-
-	always @(posedge clock or negedge reset)
-		if(~reset) begin
-			current_state <= S0;
-			light_timer <= 4'b0000;
-			sensor_reg <= 1'b0;
-			end
-		else
-			current_state <= next_state;
-
-	always @(posedge sensor)
-		sensor_reg <= 1'b1;
-
-	always @(posedge clock)
-		if(sensor_reg == 1'b1)
-			light_timer <= light_timer + 1;
-
-	always @(*)
-		case(current_state)
-			S0: begin
-					if(sensor_reg == 1'b1)
-						next_state = S1;
-					else
-						next_state = S0;
-				end
-			S1: begin
-					if(light_timer == 4'b0011)
-						next_state = S2;
-					else
-						next_state = S1;
-				end
-			S2: begin
-					if(light_timer == 4'b1100)
-						next_state = S3;
-					else
-						next_state = S2;
-				end
-			S3: begin
-					if(light_timer == 4'b1111) begin
-						next_state = S0;
-						sensor_reg = 1'b0;
-						light_timer = 4'b0000;
-						end
-					else
-						next_state = S3;
-				end
-			default: next_state = S0;
-		endcase
-
-	always @(*) begin
-		if(current_state == S0) begin
-			major = 3'b001;	// green
-			minor = 3'b100;	// red
-			end
-		if(current_state == S1) begin
-			major = 3'b010;	// yellow
-			minor = 3'b100;	// red
-			end
-		if(current_state == S2) begin
-			major = 3'b100;	// red
-			minor = 3'b001;	// green
-			end
-		if(current_state == S3) begin
-			major = 3'b100; // red
-			minor = 3'b010; // yellow
-			end
-		end
-endmodule
-
-
-
+module traffic_controller(light_highway, light_farm, C, clk, rst_n);
+parameter HGRE_FRED=2'b00, // Highway green and farm red
+   HYEL_FRED = 2'b01,// Highway yellow and farm red
+   HRED_FGRE=2'b10,// Highway red and farm green
+   HRED_FYEL=2'b11;// Highway red and farm yellow
+input C, // sensor
+   clk, // clock = 50 MHz
+   rst_n; // reset active low
+output reg[2:0] light_highway, light_farm; // output of lights
+// fpga4student.com FPGA projects, VHDL projects, Verilog projects
+reg[27:0] count=0,count_delay=0;
+reg delay10s=0, delay3s1=0,delay3s2=0,RED_count_en=0,YELLOW_count_en1=0,YELLOW_count_en2=0;
+wire clk_enable; // clock enable signal for 1s
+reg[1:0] state, next_state;
+// next state
+always @(posedge clk or negedge rst_n)
+begin
+if(~rst_n)
+ state <= 2'b00;
+else 
+ state <= next_state; 
+end
+// FSM
+always @(*)
+begin
+case(state)
+HGRE_FRED: begin // Green on highway and red on farm way
+ RED_count_en=0;
+ YELLOW_count_en1=0;
+ YELLOW_count_en2=0;
+ light_highway = 3'b001;
+ light_farm = 3'b100;
+ if(C) next_state = HYEL_FRED; 
+ // if sensor detects vehicles on farm road, 
+ // turn highway to yellow -> green
+ else next_state =HGRE_FRED;
+end
+HYEL_FRED: begin// yellow on highway and red on farm way
+  light_highway = 3'b010;
+  light_farm = 3'b100;
+  RED_count_en=0;
+ YELLOW_count_en1=1;
+ YELLOW_count_en2=0;
+  if(delay3s1) next_state = HRED_FGRE;
+  // yellow for 3s, then red
+  else next_state = HYEL_FRED;
+end
+HRED_FGRE: begin// red on highway and green on farm way
+ light_highway = 3'b100;
+ light_farm = 3'b001;
+ RED_count_en=1;
+ YELLOW_count_en1=0;
+ YELLOW_count_en2=0;
+ if(delay10s) next_state = HRED_FYEL;
+ // red in 10s then turn to yello -> green again for high way
+ else next_state =HRED_FGRE;
+end
+HRED_FYEL:begin// red on highway and yellow on farm way
+ light_highway = 3'b100;
+ light_farm = 3'b010;
+ RED_count_en=0;
+ YELLOW_count_en1=0;
+ YELLOW_count_en2=1;
+ if(delay3s2) next_state = HGRE_FRED;
+ // turn green for highway, red for farm road
+ else next_state =HRED_FYEL;
+end
+default: next_state = HGRE_FRED;
+endcase
+end
+// fpga4student.com FPGA projects, VHDL projects, Verilog projects
+// create red and yellow delay counts
+always @(posedge clk)
+begin
+if(clk_enable==1) begin
+ if(RED_count_en||YELLOW_count_en1||YELLOW_count_en2)
+  count_delay <=count_delay + 1;
+  if((count_delay == 9)&&RED_count_en) 
+  begin
+   delay10s=1;
+   delay3s1=0;
+   delay3s2=0;
+   count_delay<=0;
+  end
+  else if((count_delay == 2)&&YELLOW_count_en1) 
+  begin
+   delay10s=0;
+   delay3s1=1;
+   delay3s2=0;
+   count_delay<=0;
+  end
+  else if((count_delay == 2)&&YELLOW_count_en2) 
+  begin
+   delay10s=0;
+   delay3s1=0;
+   delay3s2=1;
+   count_delay<=0;
+  end
+  else
+  begin
+   delay10s=0;
+   delay3s1=0;
+   delay3s2=0;
+  end 
+ end
+end
+// create 1s clock enable 
+always @(posedge clk)
+begin
+ count <=count + 1;
+ //if(count == 50000000) // 50,000,000 for 50 MHz clock running on real FPGA
+ if(count == 3) // for testbench
+  count <= 0;
+end
+ assign clk_enable = count==3 ? 1: 0; // 50,000,000 for 50MHz running on FPGA
+endmodule 
