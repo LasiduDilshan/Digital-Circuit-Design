@@ -38,4 +38,9 @@
 
 In summary, these modules demonstrate how to create a Gray counter driven by a slow clock signal (1Hz) derived from a high-frequency clock (100MHz). The `gray_counter` module provides the functionality of both a binary counter and its corresponding Gray code. 
 
+
+
 Reference: https://www.eetimes.com/gray-code-fundamentals-part-2/
+
+![5](https://github.com/LasiduDilshan/Digital-Circuit-Design/assets/126545632/eb401f14-7e1d-4c60-9f97-235fae68c004)
+<img width="302" alt="6" src="https://github.com/LasiduDilshan/Digital-Circuit-Design/assets/126545632/b9a48b23-1cc5-4592-acbc-21cb0df3318e">
