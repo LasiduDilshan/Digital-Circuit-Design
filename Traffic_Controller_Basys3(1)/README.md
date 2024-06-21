@@ -36,6 +36,8 @@ This code implements a basic traffic light controller using Verilog modules. Her
 
 In summary, this code design creates a traffic light controller that cycles through different light phases (main green, main yellow, cross green, cross yellow) with specific timing controlled by the 1Hz clock signal. The debounce circuit ensures reliable button press detection for resetting the controller.
 
+![1](https://github.com/LasiduDilshan/Digital-Circuit-Design/assets/126545632/5b0fb882-4c47-4792-9d96-ed92ba0f66bd)
+
 ### How the Traffic Controller Works
 
 The traffic controller is designed to manage the traffic lights at an intersection with one main road and one crossroad. It cycles through the traffic lights in a specific sequence to ensure smooth traffic flow and safety. Here's a high-level overview without diving into the technical details:
