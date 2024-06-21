@@ -1,0 +1,145 @@
+### Full Explanation of I2C Master and Slave Interaction
+
+Below is a detailed explanation of how the provided I2C master (`i2c_controller`) and I2C slave (`i2c_slave`) modules work together to facilitate I2C communication.
+
+#### I2C Master Module (`i2c_controller`)
+
+**Inputs:**
+- `clk`: Clock signal.
+- `rst`: Reset signal.
+- `addr`: 7-bit address of the slave device.
+- `data_in`: 8-bit data to be written to the slave.
+- `enable`: Signal to initiate the I2C transaction.
+- `rw`: Read/Write control signal (`1` for read, `0` for write).
+
+**Outputs:**
+- `data_out`: 8-bit data read from the slave.
+- `ready`: Indicates if the master is ready for a new transaction.
+
+**Inouts:**
+- `i2c_sda`: Serial Data Line.
+- `i2c_scl`: Serial Clock Line.
+
+**States:**
+1. **IDLE**: Waits for the `enable` signal to start a transaction.
+2. **START**: Initiates the start condition.
+3. **ADDRESS**: Sends the slave address along with the R/W bit.
+4. **READ_ACK**: Reads the acknowledgment from the slave.
+5. **WRITE_DATA**: Sends data to the slave.
+6. **READ_DATA**: Reads data from the slave.
+7. **WRITE_ACK**: Sends acknowledgment to the slave.
+8. **STOP**: Sends the stop condition to end the transaction.
+
+#### I2C Slave Module (`i2c_slave`)
+
+**Inputs:**
+- `clk`: Clock signal.
+- `rst`: Reset signal.
+- `addr`: 7-bit address of the slave.
+
+**Outputs:**
+- `data_out`: 8-bit data to be sent to the master.
+- `data_in`: 8-bit data received from the master.
+- `ack`: Acknowledgment signal.
+
+**Inouts:**
+- `i2c_sda`: Serial Data Line.
+- `i2c_scl`: Serial Clock Line.
+
+**States:**
+1. **IDLE**: Waits for the start condition.
+2. **RECEIVE_ADDRESS**: Receives the address from the master.
+3. **SEND_ACK**: Sends acknowledgment if the address matches.
+4. **RECEIVE_DATA**: Receives data from the master.
+5. **SEND_DATA**: Sends data to the master.
+6. **STOP**: Resets the state machine after a stop condition.
+
+### Detailed Interaction
+
+#### 1. Initialization
+
+Both master and slave are initialized. The slave sets its internal address, and the master is ready to start a transaction when `enable` is high.
+
+#### 2. Start Condition
+
+- **Master**: 
+  - Enters the `START` state.
+  - Pulls `i2c_sda` low while `i2c_scl` is high, signaling the start condition.
+
+- **Slave**:
+  - Detects the start condition and moves from `IDLE` to `RECEIVE_ADDRESS`.
+
+#### 3. Address Phase
+
+- **Master**:
+  - Enters the `ADDRESS` state.
+  - Sends the 7-bit address followed by the RW bit.
+
+- **Slave**:
+  - Receives the address bit by bit.
+  - If the received address matches its own, it sends an acknowledgment by pulling `i2c_sda` low.
+
+#### 4. Read/Write Decision
+
+- **Master**:
+  - Enters the `READ_ACK` state.
+  - Reads the acknowledgment from the slave.
+  - Based on the RW bit:
+    - For a write operation (`rw = 0`): Enters the `WRITE_DATA` state.
+    - For a read operation (`rw = 1`): Enters the `READ_DATA` state.
+
+- **Slave**:
+  - Sends acknowledgment and prepares for either data reception or transmission.
+
+#### 5. Data Transfer
+
+**Write Operation (Master to Slave)**:
+- **Master**:
+  - Enters the `WRITE_DATA` state.
+  - Sends the data byte to the slave.
+  - Waits for an acknowledgment from the slave (`READ_ACK2` state).
+
+- **Slave**:
+  - Receives the data byte bit by bit in the `RECEIVE_DATA` state.
+  - Acknowledges the received data by pulling `i2c_sda` low.
+
+**Read Operation (Slave to Master)**:
+- **Master**:
+  - Enters the `READ_DATA` state.
+  - Receives the data byte bit by bit from the slave.
+  - Acknowledges the received data (`WRITE_ACK` state).
+
+- **Slave**:
+  - Sends the data byte bit by bit in the `SEND_DATA` state.
+  - Waits for acknowledgment from the master.
+
+#### 6. Stop Condition
+
+- **Master**:
+  - Enters the `STOP` state.
+  - Pulls `i2c_sda` high while `i2c_scl` is high, signaling the stop condition.
+  - Resets to the `IDLE` state.
+
+- **Slave**:
+  - Detects the stop condition.
+  - Resets to the `IDLE` state.
+
+### Complete Interaction
+
+1. **Master Write Sequence**:
+    - Master initiates the start condition.
+    - Master sends the slave address with the write bit.
+    - Slave acknowledges the address.
+    - Master sends the data byte.
+    - Slave acknowledges the data.
+    - Master initiates the stop condition.
+
+2. **Master Read Sequence**:
+    - Master initiates the start condition.
+    - Master sends the slave address with the read bit.
+    - Slave acknowledges the address.
+    - Slave sends the data byte.
+    - Master acknowledges the data.
+    - Master initiates the stop condition.
+
+Reference: https://www.circuitbasics.com/basics-of-the-i2c-communication-protocol/
