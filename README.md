@@ -1,4 +1,4 @@
-# Digital-Circuit-Design
+# Digital-Circuit-Design 
 
 This repository contains a collection of digital circuit designs implemented in Verilog and Tcl. The projects include:
 
